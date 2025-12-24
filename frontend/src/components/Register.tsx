@@ -27,11 +27,11 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-md mx-auto bg-white p-6 rounded-md shadow">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">Register</h2>
+      {error && <p className="text-red-600 mb-2">{error}</p>}
+      {success && <p className="text-green-600 mb-2">{success}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
             type="text"
@@ -39,6 +39,7 @@ const Register: React.FC = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
           />
         </div>
         <div>
@@ -48,6 +49,7 @@ const Register: React.FC = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
           />
         </div>
         <div>
@@ -57,12 +59,21 @@ const Register: React.FC = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
           />
         </div>
-        <button type="submit">Register</button>
+        <button
+          type="submit"
+          className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Register
+        </button>
       </form>
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
+      <p className="mt-4 text-center text-sm text-gray-600">
+        Already have an account?{' '}
+        <Link to="/login" className="text-blue-600 hover:underline">
+          Login
+        </Link>
       </p>
     </div>
   );

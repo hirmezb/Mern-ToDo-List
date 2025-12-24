@@ -1,35 +1,78 @@
 import axios, { AxiosResponse } from 'axios';
 import type { User, Task } from './types';
 
-// Base API instance
+// Create a shared Axios instance for API calls.  The baseURL should match
+// where your Express server is running.  In development this is typically
+// http://localhost:5000/api.
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api'
+  baseURL: 'http://localhost:5000/api',
 });
 
-// Register a user
+// Attach the token from localStorage to every request.  This avoids having
+// to pass the token through each API call individually.  If a token is
+// present in localStorage, it is added to the Authorization header.
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Global response interceptor: if the server returns a 401, the token has
+// likely expired or is invalid.  Clear local storage and redirect to the
+// login page so the user can re-authenticate.
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Remove token and user from localStorage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      // Redirect to login page
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Register a new user.  Sends name, email and password to the backend.
+ * Returns a promise resolving to the Axios response.
+ */
 export const registerUser = (data: {
   name: string;
   email: string;
   password: string;
 }): Promise<AxiosResponse<any>> => API.post('/users/register', data);
 
-// Login a user
+/**
+ * Login a user.  Sends email and password to the backend and expects
+ * an object containing a JWT token and user details in the response.
+ */
 export const loginUser = (data: {
   email: string;
   password: string;
 }): Promise<AxiosResponse<{ token: string; user: User }>> =>
   API.post('/users/login', data);
 
-// Get tasks with filters
+/**
+ * Fetch tasks for the authenticated user.  Accepts optional query
+ * parameters for filtering and sorting tasks.  The token is automatically
+ * attached via the request interceptor.
+ */
 export const getTasks = (
-  token: string,
   params: { priority: string; category: string; completed: string }
-): Promise<AxiosResponse<Task[]>> =>
-  API.get('/tasks', { headers: { Authorization: `Bearer ${token}` }, params });
+): Promise<AxiosResponse<Task[]>> => API.get('/tasks', { params });
 
-// Create a task
+/**
+ * Create a new task.  The token is automatically attached via the
+ * request interceptor.
+ */
 export const createTask = (
-  token: string,
   data: {
     title: string;
     description?: string;
@@ -37,12 +80,13 @@ export const createTask = (
     dueDate?: Date | null;
     category?: string;
   }
-): Promise<AxiosResponse<Task>> =>
-  API.post('/tasks', data, { headers: { Authorization: `Bearer ${token}` } });
+): Promise<AxiosResponse<Task>> => API.post('/tasks', data);
 
-// Update a task
+/**
+ * Update an existing task by ID.  Only include fields that you want to
+ * update (e.g. completed, title, description, etc.).
+ */
 export const updateTask = (
-  token: string,
   id: string,
   data: Partial<{
     title: string;
@@ -52,12 +96,12 @@ export const updateTask = (
     category: string;
     completed: boolean;
   }>
-): Promise<AxiosResponse<Task>> =>
-  API.put(`/tasks/${id}`, data, { headers: { Authorization: `Bearer ${token}` } });
+): Promise<AxiosResponse<Task>> => API.put(`/tasks/${id}`, data);
 
-// Delete a task
+/**
+ * Delete a task by ID.  The token is automatically attached via the
+ * request interceptor.
+ */
 export const deleteTask = (
-  token: string,
   id: string
-): Promise<AxiosResponse<{ message: string }>> =>
-  API.delete(`/tasks/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+): Promise<AxiosResponse<{ message: string }>> => API.delete(`/tasks/${id}`);
