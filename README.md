@@ -1,7 +1,7 @@
 A full-stack **MERN (MongoDB, Express, React, Node.js)** to-do application that allows users to securely register, log in, and manage tasks with persistent storage. The frontend is built with **React + TypeScript + Vite** and styled using **Tailwind CSS**, while the backend exposes RESTful APIs using **Express** and **MongoDB**.
 
 🔗 **Live Demo:**
-👉 [https://benel-mern-todo-list.vercel.app/login](https://benel-mern-todo-list.vercel.app/login)
+👉 [https://benel-mern-todo-list.vercel.app](https://benel-mern-todo-list.vercel.app)
 
 ---
 
