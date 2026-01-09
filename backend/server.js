@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://benel-mern-todo-list.vercel.app/"
+    "https://benel-mern-todo-list.vercel.app"
   ],
   credentials: true
 }));
