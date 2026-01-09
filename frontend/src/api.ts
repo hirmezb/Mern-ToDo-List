@@ -1,16 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
 import type { User, Task } from './types';
 
-// Create a shared Axios instance for API calls.  The baseURL should match
-// where your Express server is running.  In development this is typically
-// http://localhost:5000/api.
+
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 });
 
-// Attach the token from localStorage to every request.  This avoids having
-// to pass the token through each API call individually.  If a token is
-// present in localStorage, it is added to the Authorization header.
+
+// Global request interceptor: attach the JWT token from localStorage
+// to the Authorization header for all outgoing requests.
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {

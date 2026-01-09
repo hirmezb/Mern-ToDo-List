@@ -8,7 +8,14 @@ const userRoutes = require('./routes/users');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://benel-mern-todo-list.vercel.app/"
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
 mongoose
